@@ -11,15 +11,33 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
 }
 
 model event {
-  id Int @id @default(autoincrement())
-  title String
-  contact String
-  summary String
-  start DateTime
-  end DateTime
-  location String
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  title     String
+  contact   String
+  summary   String
+  url       String
+  start     DateTime
+  end       DateTime
+  location  String
+  tags      EventTag[]
+}
+
+model tag {
+  id     Int        @id @default(autoincrement())
+  name   String     @unique
+  events EventTag[]
+}
+
+model EventTag {
+  event   event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId Int
+  tag     tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId   Int
+
+  @@id([eventId, tagId])
 }
