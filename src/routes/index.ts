@@ -1,4 +1,5 @@
 import {Server} from "@hapi/hapi";
+import {eventRoutes} from "./events";
 
 
 /**
@@ -8,5 +9,5 @@ import {Server} from "@hapi/hapi";
  * @return {void} No return value.
  */
 export function registerRoutes(server: Server): void {
-
+    server.route(eventRoutes);
 }
