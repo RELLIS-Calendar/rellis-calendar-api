@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/server.js",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "dev": "ts-node src/server.ts",
@@ -10,12 +11,16 @@
   },
   "dependencies": {
     "@hapi/hapi": "^21.4.4",
+    "@prisma/adapter-mariadb": "^7.1.0",
+    "@prisma/client": "^7.1.0",
+    "dotenv": "^17.2.3",
     "joi": "^18.0.2"
   },
   "devDependencies": {
     "@types/hapi__hapi": "^20.0.13",
     "@types/joi": "^17.2.2",
     "@types/node": "^24.10.1",
+    "prisma": "^7.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
