@@ -18,6 +18,7 @@ model event {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   title     String
+  host      String
   contact   String?
   summary   String?
   url       String?

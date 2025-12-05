@@ -5,6 +5,7 @@ export const createEventSchema = {
     payload: Joi.object({
         title: Joi.string().required().max(255),
         summary: Joi.string().optional(),
+        host: Joi.string().required(),
         contact: Joi.string().email().optional(),
         url: Joi.string().uri().optional(),
         start: Joi.date().iso().required(),
@@ -17,8 +18,8 @@ export const createEventSchema = {
 // Get /api/events - Get events with query params
 export const listEventsSchema = {
     query: Joi.object({
+        host: Joi.string().optional(),
         tag: Joi.string().optional(),
-        audience: Joi.string().optional(),
         startDate: Joi.date().iso().optional(),
         endDate: Joi.date().iso().optional()
     })
@@ -38,6 +39,7 @@ export const updateEventSchema = {
     }),
     payload: Joi.object({
         title: Joi.string().max(255),
+        host: Joi.string().optional(),
         contact: Joi.string().email().optional(),
         summary: Joi.string().optional(),
         url: Joi.string().uri().optional(),
