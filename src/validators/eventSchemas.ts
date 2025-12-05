@@ -26,7 +26,7 @@ export const listEventsSchema = {
 };
 
 // Get /api/events/{id} - Get an event by its ID
-export const getEventByIDSchema = {
+export const getEventByIdSchema = {
     params: Joi.object({
         id: Joi.number().integer().positive().required()
     })
