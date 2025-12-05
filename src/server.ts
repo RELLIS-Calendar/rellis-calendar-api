@@ -1,6 +1,7 @@
 'use strict';
 
 import Hapi, {Server} from '@hapi/hapi';
+import {registerRoutes} from "./routes";
 
 let server: Server;
 
@@ -11,7 +12,7 @@ const init = async function (): Promise<Server> {
         host: 'localhost'
     });
 
-    // Routes
+    registerRoutes(server);
 
     return server;
 };
