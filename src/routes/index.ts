@@ -1,5 +1,6 @@
 import {Server} from "@hapi/hapi";
 import {eventRoutes} from "./events";
+import {tagRoutes} from "./tags";
 
 
 /**
@@ -10,4 +11,5 @@ import {eventRoutes} from "./events";
  */
 export function registerRoutes(server: Server): void {
     server.route(eventRoutes);
+    server.route(tagRoutes);
 }
