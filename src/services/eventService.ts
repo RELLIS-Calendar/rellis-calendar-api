@@ -113,3 +113,9 @@ export async function updateEvent(id: number, data: UpdateEventPayload) {
         }
     })
 }
+
+export async function deleteEvent(id: number) {
+    return await prisma.event.delete({
+        where: {id}
+    });
+}
