@@ -116,9 +116,13 @@ export const eventRoutes: ServerRoute[] = [
                     ...e,
                     tags: e.tags.map(t => t.tag.name)
                 }))
-                return h.response(events).code(200);
+                return h.response(formattedEvents).code(200);
             } catch (error) {
-                return h.response({ error: 'Failed to fetch events' }).code(500);
+                console.error('Error fetching events:', error);
+                return h.response({
+                    error: 'Failed to fetch events',
+                    message: error instanceof Error ? error.message : 'Unknown error occurred'
+                }).code(500);
             }
         }
     },
