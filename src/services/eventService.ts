@@ -1,5 +1,5 @@
 import {prisma} from "../config/database";
-import {EventFilterParams, CreateEventPayload} from "../models/types";
+import {EventFilterParams, CreateEventPayload, UpdateEventPayload} from "../models/types";
 
 
 export async function getEvents(filters: EventFilterParams) {
@@ -77,4 +77,39 @@ export async function getEventById(id: number) {
             }
         }
     });
+}
+
+export async function updateEvent(id: number, data: UpdateEventPayload) {
+    const {tags, ...eventData} = data;
+
+    if (eventData.start && eventData.end && eventData.end <= eventData.start) {
+        throw new Error('Event end date must be after start date');
+    }
+
+    return await prisma.event.update({
+        where: {id},
+        data: {
+            ...eventData,
+            ...(tags && {
+                tags: {
+                    deleteMany: {},
+                    create: tags.map(tagName => ({
+                        tag: {
+                            connectOrCreate: {
+                                where: {name: tagName},
+                                create: {name: tagName}
+                            }
+                        }
+                    }))
+                }
+            })
+        },
+        include: {
+            tags: {
+                include: {
+                    tag: true
+                }
+            }
+        }
+    })
 }
