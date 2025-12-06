@@ -1,7 +1,7 @@
 'use strict';
 
 import Hapi, {Server} from '@hapi/hapi';
-import {registerRoutes} from "./routes";
+import {registerRoutes} from './routes';
 
 let server: Server;
 

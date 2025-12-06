@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/server.js",
-  "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "ts-node src/server.ts",
+    "dev": "tsx src/server.ts",
     "start": "node dist/server.js"
   },
   "dependencies": {
@@ -22,6 +21,7 @@
     "@types/node": "^24.10.1",
     "prisma": "^7.1.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "private": true
