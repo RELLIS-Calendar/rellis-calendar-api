@@ -107,7 +107,18 @@ export const eventRoutes: ServerRoute[] = [
         handler: async (request, h) => {
             try {
                 const filters = request.query as EventFilterParams;
+
+                if (filters.startDate && typeof filters.startDate === 'string') {
+                    filters.startDate = new Date(filters.startDate);
+                }
+                if (filters.endDate && typeof filters.endDate === 'string') {
+                    filters.endDate = new Date(filters.endDate);
+                }
                 const events = await EventService.getEvents(filters);
+                const formattedEvents = events.map(e => ({
+                    ...e,
+                    tags: e.tags.map(t => t.tag.name)
+                }))
                 return h.response(events).code(200);
             } catch (error) {
                 return h.response({ error: 'Failed to fetch events' }).code(500);
