@@ -1,6 +1,6 @@
 import {ServerRoute} from "@hapi/hapi";
 import * as EventValidators from '../validators/eventSchemas';
-import {EventFilterParams} from "../models/types";
+import {CreateEventPayload, EventFilterParams, UpdateEventPayload} from "../models/types";
 import * as EventService from "../services/eventService";
 
 // MOCK DATA to be replaced with actual database calls later
@@ -140,17 +140,30 @@ export const eventRoutes: ServerRoute[] = [
             tags: ['api', 'events']
         },
         handler: async (request, h) => {
-            const id = Number(request.params.id);
-            const event = mockEvents.find(e => e.id === id);
+            try {
+                const id = Number(request.params.id);
+                const event = await EventService.getEventById(id);
 
-            if (!event) {
+                if (!event) {
+                    return h.response({
+                        error: 'Event not found',
+                        message: `No event exists with id ${id}`
+                    }).code(404);
+                }
+
+                const formattedEvent = {
+                    ...event,
+                    tags: event.tags.map(t => t.tag.name)
+                }
+
+                return h.response(formattedEvent).code(200);
+            } catch (error) {
+                console.error('Error fetching event by id:', error);
                 return h.response({
-                    error: 'Event not found',
-                    message: `No event exists with id ${id}`
-                }).code(404);
+                    error: 'Failed to fetch event',
+                    message: error instanceof Error ? error.message : 'Unknown error occurred'
+                }).code(500);
             }
-
-            return h.response(event).code(200);
         }
     },
 
@@ -164,24 +177,39 @@ export const eventRoutes: ServerRoute[] = [
             tags: ['api', 'events']
         },
         handler: async (request, h) => {
-            const payload = request.payload as any;
+            try {
+                const payload = request.payload as CreateEventPayload;
 
-            // Mock created event
-            const newEvent = {
-                id: mockEvents.length + 1,
-                ...payload,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                tags: payload.tags?.map((name: string, idx: number) => ({
-                    id: idx + 100,
-                    name
-                })) || []
-            };
+                const eventData: CreateEventPayload = {
+                    ...payload,
+                    start: new Date(payload.start),
+                    end: new Date(payload.end)
+                };
 
-            // TODO: Actually save to database
-            mockEvents.push(newEvent);
+                const newEvent = await EventService.createEvent(eventData);
 
-            return h.response(newEvent).code(201);
+                const formattedEvent = {
+                    ...newEvent,
+                    tags: newEvent.tags.map(t => t.tag.name)
+                }
+
+                return h.response(formattedEvent).code(201);
+            } catch (error) {
+                console.log('Error creating event:', error);
+
+                if (error instanceof Error && error.message.includes('Event end date must be after start date')) {
+                    return h.response({
+                        error: 'Validation Error',
+                        message: error.message
+                    }).code(400);
+                }
+
+                console.error('Error creating event:', error);
+                return h.response({
+                    error: 'Failed to create event',
+                    message: error instanceof Error ? error.message : 'Unknown error occurred'
+                }).code(500);
+            }
         }
     },
     {
@@ -193,32 +221,47 @@ export const eventRoutes: ServerRoute[] = [
             tags: ['api', 'events']
         },
         handler: async (request, h) => {
-            const id = Number(request.params.id);
-            const payload = request.payload as any;
-            const eventIndex = mockEvents.findIndex(e => e.id === id);
+            try {
+                const id = Number(request.params.id);
+                const payload = request.payload as UpdateEventPayload;
+                const eventData: UpdateEventPayload = {
+                    ...payload
+                };
+                if (payload.start) {
+                    eventData.start = new Date(payload.start);
+                }
+                if (payload.end) {
+                    eventData.end = new Date(payload.end);
+                }
 
-            if (eventIndex === -1) {
+                const updatedEvent = await EventService.updateEvent(id, eventData);
+                const formattedEvent = {
+                    ...updatedEvent,
+                    tags: updatedEvent.tags.map(t => t.tag.name)
+                };
+                return h.response(formattedEvent).code(200);
+            } catch (error) {
+                console.error('Error updating event:', error);
+
+                if (error instanceof Error && error.message.includes('Record to update not found')) {
+                    return h.response({
+                        error: 'Event not found',
+                        message: `No event exists with id ${request.params.id}`
+                    }).code(404);
+                }
+
+                if (error instanceof Error && error.message.includes('end date must be after start date')) {
+                    return h. response({
+                        error: 'Validation error',
+                        message: error.message
+                    }).code(400);
+                }
+
                 return h.response({
-                    error: 'Event not found',
-                    message: `No event exists with id ${id}`
-                }).code(404);
+                    error: 'Failed to update event',
+                    message: error instanceof Error ? error. message : 'Unknown error occurred'
+                }).code(500);
             }
-
-            // Mock update
-            const updatedEvent = {
-                ...mockEvents[eventIndex],
-                ...payload,
-                updatedAt: new Date().toISOString(),
-                tags: payload.tags?.map((name: string, idx: number) => ({
-                    id: idx + 100,
-                    name
-                })) || mockEvents[eventIndex].tags
-            };
-
-            // TODO: Actually update in database
-            mockEvents[eventIndex] = updatedEvent;
-
-            return h.response(updatedEvent).code(200);
         }
     },
     {
@@ -230,23 +273,29 @@ export const eventRoutes: ServerRoute[] = [
             tags: ['api', 'events']
         },
         handler: async (request, h) => {
-            const id = Number(request.params.id);
-            const eventIndex = mockEvents.findIndex(e => e.id === id);
+            try {
+                const id = Number(request. params.id);
+                await EventService.deleteEvent(id);
 
-            if (eventIndex === -1) {
                 return h.response({
-                    error: 'Event not found',
-                    message: `No event exists with id ${id}`
-                }).code(404);
+                    message: 'Event deleted successfully',
+                    id
+                }).code(200);
+            } catch (error) {
+                console.error('Error deleting event:', error);
+
+                if (error instanceof Error && error.message. includes('Record to delete does not exist')) {
+                    return h.response({
+                        error: 'Event not found',
+                        message: `No event exists with id ${request.params.id}`
+                    }).code(404);
+                }
+
+                return h.response({
+                    error: 'Failed to delete event',
+                    message: error instanceof Error ? error.message : 'Unknown error occurred'
+                }).code(500);
             }
-
-            // TODO: Actually delete from database
-            mockEvents.splice(eventIndex, 1);
-
-            return h.response({
-                message: 'Event deleted successfully',
-                id
-            }).code(200);
         }
     }
 ];
