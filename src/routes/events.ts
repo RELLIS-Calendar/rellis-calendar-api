@@ -13,8 +13,7 @@ const mockEvents = [
         start: "2025-12-10T00:00:00.000Z",
         end: "2025-12-17T00:00:00.000Z",
         location: "RELLIS Academic Alliance",
-        createdAt: "2025-12-05T00:00:00.000Z",
-        updatedAt: "2025-12-05T00:00:00.000Z",
+        featured: true,
         tags: [
             {id: 1, name: "students"},
         ]
@@ -31,6 +30,7 @@ const mockEvents = [
         location: "Brazos County Expo Center: 5827 Leonard Rd, Bryan, TX",
         createdAt: "2025-12-05T00:00:00.000Z",
         updatedAt: "2025-12-05T00:00:00.000Z",
+        featured: true,
         tags: [
             {id: 1, name: "students"},
             {id: 2, name: "event"},
@@ -50,6 +50,7 @@ const mockEvents = [
         location: "RELLIS Academic Alliance",
         createdAt: "2025-12-05T00:00:00.000Z",
         updatedAt: "2025-12-05T00:00:00.000Z",
+        featured: true,
         tags: [
             {id: 1, name: "students"},
         ]
@@ -66,6 +67,7 @@ const mockEvents = [
         location: "RELLIS Campus, ACB2 room 112",
         createdAt: "2025-12-05T00:00:00.000Z",
         updatedAt: "2025-12-05T00:00:00.000Z",
+        featured: false,
         tags: [
             {id: 5, name: "recruitment"},
             {id: 3, name: "family"},
@@ -81,6 +83,7 @@ const mockEvents = [
         location: "RELLIS Academic Alliance",
         createdAt: "2025-12-05T00:00:00.000Z",
         updatedAt: "2025-12-05T00:00:00.000Z",
+        featured: false,
         tags: [
             {id: 1, name: "students"},
             {id: 6, name: "recharge"},

@@ -9,7 +9,7 @@ const init = async function (): Promise<Server> {
 
     server = Hapi.server({
         port: 3000,
-        host: 'localhost'
+        host: 'localhost',
     });
 
     registerRoutes(server);

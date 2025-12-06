@@ -5,13 +5,16 @@ export const createEventSchema = {
     payload: Joi.object({
         title: Joi.string().required().max(255),
         summary: Joi.string().optional(),
-        host: Joi.string().required(),
+        host: Joi.string().optional(),
         contact: Joi.string().email().optional(),
         url: Joi.string().uri().optional(),
         start: Joi.date().iso().required(),
         end: Joi.date().iso().required(),
         location: Joi.string().optional(),
-        tags: Joi.array().items(Joi.string()).optional()
+        tags: Joi.array().items(Joi.string()).optional(),
+        featured: Joi.boolean().optional(),
+        createdAt: Joi.date().iso().optional(),
+        updatedAt: Joi.date().iso().optional(),
     })
 };
 
