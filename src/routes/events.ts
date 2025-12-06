@@ -1,5 +1,7 @@
 import {ServerRoute} from "@hapi/hapi";
 import * as EventValidators from '../validators/eventSchemas';
+import {EventFilterParams} from "../models/types";
+import * as EventService from "../services/eventService";
 
 // MOCK DATA to be replaced with actual database calls later
 const mockEvents = [
@@ -100,8 +102,13 @@ export const eventRoutes: ServerRoute[] = [
             notes: 'Query params: tag, startDate, endDate'
         },
         handler: async (request, h) => {
-            // TODO: Apply filters from request.query
-            return h.response(mockEvents).code(200);
+            try {
+                const filters = request.query as EventFilterParams;
+                const events = await EventService.getEvents(filters);
+                return h.response(events).code(200);
+            } catch (error) {
+                return h.response({ error: 'Failed to fetch events' }).code(500);
+            }
         }
     },
 
