@@ -18,13 +18,6 @@ export const eventRoutes: ServerRoute[] = [
         handler: async (request, h) => {
             try {
                 const filters = request.query as EventFilterParams;
-
-                if (filters.startDate && typeof filters.startDate === 'string') {
-                    filters.startDate = new Date(filters.startDate);
-                }
-                if (filters.endDate && typeof filters.endDate === 'string') {
-                    filters.endDate = new Date(filters.endDate);
-                }
                 const events = await EventService.getEvents(filters);
                 const formattedEvents = events.map(e => ({
                     ...e,
@@ -106,7 +99,6 @@ export const eventRoutes: ServerRoute[] = [
 
                 return h.response(formattedEvent).code(201);
             } catch (error) {
-                console.log('Error creating event:', error);
 
                 if (error instanceof Error && error.message.includes('Event end date must be after start date')) {
                     return h.response({
