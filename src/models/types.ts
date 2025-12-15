@@ -3,6 +3,7 @@ export interface EventFilterParams {
     host?: string;
     startDate?: Date;
     endDate?: Date;
+    featured?: boolean;
 }
 
 export interface CreateEventPayload {
@@ -15,6 +16,7 @@ export interface CreateEventPayload {
     end: Date;
     location?: string;
     tags?: string[];
+    featured?: boolean;
 }
 
 export interface UpdateEventPayload {
@@ -27,4 +29,5 @@ export interface UpdateEventPayload {
     end?: Date;
     location?: string;
     tags?: string[];
+    featured?: boolean;
 }

@@ -13,8 +13,6 @@ export const createEventSchema = {
         location: Joi.string().optional(),
         tags: Joi.array().items(Joi.string()).optional(),
         featured: Joi.boolean().optional(),
-        createdAt: Joi.date().iso().optional(),
-        updatedAt: Joi.date().iso().optional(),
     })
 };
 
@@ -24,7 +22,8 @@ export const listEventsSchema = {
         host: Joi.string().optional(),
         tag: Joi.string().optional(),
         startDate: Joi.date().iso().optional(),
-        endDate: Joi.date().iso().optional()
+        endDate: Joi.date().iso().optional(),
+        featured: Joi.boolean().optional(),
     })
 };
 
@@ -49,7 +48,8 @@ export const updateEventSchema = {
         start: Joi.date().iso().optional(),
         end: Joi.date().iso().optional(),
         location: Joi.string().optional(),
-        tags: Joi.array().items(Joi.string()).optional()
+        tags: Joi.array().items(Joi.string()).optional(),
+        featured: Joi.boolean().optional(),
     })
 };
 
