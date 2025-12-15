@@ -10,7 +10,7 @@ export const tagRoutes: ServerRoute[] = [
             description: 'Get all unique tags',
             tags: ['api', 'tags']
         },
-        handler: async (request, h) => {
+        handler: async (_request, h) => {
             try {
                 const tags = await TagService.getAllTags();
                 return h.response(tags).code(200);
@@ -32,7 +32,7 @@ export const tagRoutes: ServerRoute[] = [
             description: 'Get popular tags',
             tags: ['api', 'tags']
         },
-        handler: async (request, h) => {
+        handler: async (_request, h) => {
             try {
                 const popularTags = await TagService.getPopularTags();
                 return h.response(popularTags).code(200);
