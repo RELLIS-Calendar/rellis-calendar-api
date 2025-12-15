@@ -23,26 +23,4 @@ export const tagRoutes: ServerRoute[] = [
             }
         }
     },
-
-    // GET /api/tags/popular - Get popular tags
-    {
-        method: 'GET',
-        path: '/api/tags/popular',
-        options: {
-            description: 'Get popular tags',
-            tags: ['api', 'tags']
-        },
-        handler: async (_request, h) => {
-            try {
-                const popularTags = await TagService.getPopularTags();
-                return h.response(popularTags).code(200);
-            } catch (error) {
-                console.error('Error fetching popular tags:', error);
-                return h.response({
-                    error: 'Failed to fetch popular tags',
-                    message: error instanceof Error ? error.message : 'Unknown error occurred'
-                }).code(500);
-            }
-        }
-    }
 ];

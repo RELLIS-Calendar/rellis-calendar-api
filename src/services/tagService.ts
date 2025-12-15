@@ -7,21 +7,3 @@ export async function getAllTags() {
         }
     });
 }
-
-export async function getPopularTags(limit: number = 10) {
-    return await prisma.tag.findMany({
-        include: {
-            _count: {
-                select: {
-                    events: true
-                }
-            }
-        },
-        orderBy: {
-            events: {
-                _count: 'desc'
-            }
-        },
-        take: limit
-    });
-}
