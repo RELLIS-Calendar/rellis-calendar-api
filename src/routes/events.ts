@@ -13,7 +13,7 @@ export const eventRoutes: ServerRoute[] = [
             validate: EventValidators.listEventsSchema,
             description: 'Get all events with optional filters',
             tags: ['api', 'events'],
-            notes: 'Query params: tag, startDate, endDate'
+            notes: 'Query params: tag, startDate, endDate, featured'
         },
         handler: async (request, h) => {
             try {
