@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/server.ts",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "test": "TS_NODE_PROJECT=tsconfig.test.json mocha",
+    "test:watch": "TS_NODE_PROJECT=tsconfig.test.json mocha --watch"
   },
   "dependencies": {
     "@hapi/hapi": "^21.4.4",
@@ -16,9 +18,13 @@
     "joi": "^18.0.2"
   },
   "devDependencies": {
+    "@types/chai": "^5.2.3",
     "@types/hapi__hapi": "^20.0.13",
     "@types/joi": "^17.2.2",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^24.10.1",
+    "chai": "^6.2.1",
+    "mocha": "^11.7.5",
     "prisma": "^7.1.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",

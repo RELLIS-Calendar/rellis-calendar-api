@@ -1,0 +1,10 @@
+{
+  "extension": ["js", "ts"],
+  "spec": "test/**/*.test.{js,ts}",
+  "require": ["ts-node/register"],
+  "timeout": 10000,
+  "color": true,
+  "reporter": "spec",
+  "exit": true
+}
+
