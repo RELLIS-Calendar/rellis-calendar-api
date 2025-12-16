@@ -3,7 +3,7 @@ import {EventFilterParams, CreateEventPayload, UpdateEventPayload} from "../mode
 
 
 export async function getEvents(filters: EventFilterParams) {
-    const {tag, host, startDate, endDate} = filters;
+    const {tag, host, startDate, endDate, featured} = filters;
 
     return await prisma.event.findMany({
         where: {
@@ -19,6 +19,7 @@ export async function getEvents(filters: EventFilterParams) {
             ...(host && {host: {contains: host}}),
             ...(startDate && {start: {gte: startDate}}),
             ...(endDate && {end: {lte: endDate}}),
+            ...(featured !== undefined && {featured: featured}),
         },
         include: {
             tags: {
