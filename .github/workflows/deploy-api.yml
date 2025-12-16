@@ -51,6 +51,7 @@ jobs:
           cp package*.json deploy/
           cp -r prisma deploy/
           cp -r .ebextensions deploy/
+          cp Procfile deploy/
           cd deploy && zip -r ../deploy.zip .
 
       - name: Get timestamp
