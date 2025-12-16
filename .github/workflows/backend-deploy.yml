@@ -1,4 +1,4 @@
-name: CI/CD - Deploy Backend to Elastic Beanstalk
+name: CI/CD - Deploy Backend to Elastic Beanstalk (Build Locally, rely on EB prebuild)
 
 on:
   push:
@@ -7,23 +7,44 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      EB_APP_NAME: ${{ secrets.EB_APP_NAME }}
+      EB_ENV_NAME: ${{ secrets.EB_ENV_NAME }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Install dependencies
+      - name: Install dependencies (CI - include dev deps for build)
         run: npm ci
 
-      - name: Build
+      - name: Build (TypeScript -> dist)
         run: npm run build
 
-      - name: Create deploy package
+      - name: Verify generated Prisma exists
         run: |
-          zip -r deploy.zip . -x "node_modules/*" 
+          if [ -d "generated/prisma" ]; then
+            echo "Prisma client found in generated/prisma"
+          else
+            echo "Warning: generated/prisma not found — make sure Prisma client is committed or generation will run on EB"
+          fi
+
+      - name: Create deploy package (no node_modules)
+        id: package
+        run: |
+          VERSION=${GITHUB_SHA}
+          PKG=/tmp/deploy-${VERSION}.zip
+          echo "Creating deploy package: ${PKG}"
+          # Include built dist and necessary runtime files and hooks; EB will run npm ci --production via prebuild hook
+          zip -r "$PKG" dist package.json package-lock.json prisma generated .platform .ebextensions src README.md -x "**/node_modules/*" "**/.git/*" "**/.github/*" "deploy/*" "deploy.zip"
+          ls -lh "$PKG"
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -32,10 +53,33 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Deploy to Elastic Beanstalk
+      - name: Upload package to S3
         run: |
-          pip install --user awsebcli
-          export PATH="$HOME/.local/bin:$PATH"
-          eb init ${{ secrets.EB_APP_NAME }} --region ${{ secrets.AWS_REGION }}
-          eb deploy ${{ secrets.EB_ENV_NAME }}
+          VERSION=${GITHUB_SHA}
+          aws s3 cp /tmp/deploy-${VERSION}.zip s3://${{ secrets.S3_BUCKET }}/deployments/${VERSION}.zip
+
+      - name: Create Elastic Beanstalk application version
+        run: |
+          VERSION=${GITHUB_SHA}
+          aws elasticbeanstalk create-application-version \
+            --application-name "${{ secrets.EB_APP_NAME }}" \
+            --version-label "${VERSION}" \
+            --source-bundle S3Bucket=${{ secrets.S3_BUCKET }},S3Key=deployments/${VERSION}.zip \
+            --region ${{ secrets.AWS_REGION }}
+
+      - name: Update Elastic Beanstalk environment to new version
+        run: |
+          VERSION=${GITHUB_SHA}
+          aws elasticbeanstalk update-environment \
+            --environment-name "${{ secrets.EB_ENV_NAME }}" \
+            --version-label "${VERSION}" \
+            --region ${{ secrets.AWS_REGION }}
+
+      - name: Wait for environment update to complete
+        run: |
+          echo "Waiting for environment to finish updating..."
+          aws elasticbeanstalk wait environment-updated --environment-names "${{ secrets.EB_ENV_NAME }}" --region ${{ secrets.AWS_REGION }}
+
+      - name: Deployment finished
+        run: echo "Deployment complete. EB environment should be updated to new version: ${{ github.sha }}"
 
