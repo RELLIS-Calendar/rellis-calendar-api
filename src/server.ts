@@ -12,7 +12,7 @@ const init = async function (): Promise<Server> {
         host: '0.0.0.0',
         routes: {
             cors: {
-                origin: ['*'], // In production, replace with Amplify domain
+                origin: ['https://main.d2nd1e6tb57dgk.amplifyapp.com/'], // In production, replace with Amplify domain
                 credentials: true
             }
         }
