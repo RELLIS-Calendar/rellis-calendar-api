@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { CreateEventPayload, UpdateEventPayload } from '../src/models/types';
 
-describe('Rellis Calendar API Tests', function() {
+describe('RELLIS Calendar API Tests', function() {
 
     describe('Event Validation Logic', function() {
 
