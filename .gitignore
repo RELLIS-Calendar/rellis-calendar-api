@@ -1,6 +1,11 @@
-node_modules
-# Keep environment variables out of version control
+node_modules/
+deploy/
+deploy.zip
+.idea/
+.vscode/
+.DS_Store
+*.log
+.env.local
 .env
+dist/
 
-/generated/prisma
-/package-lock.json
