@@ -32,6 +32,12 @@ jobs:
 
       - name: Generate Prisma Client
         run: npx prisma generate
+        env:
+          DB_HOST: localhost
+          DB_PORT: 3306
+          DB_USER: dummy
+          DB_PASSWORD: dummy
+          DB_NAME: dummy
 
       - name: Build TypeScript
         run: npm run build
