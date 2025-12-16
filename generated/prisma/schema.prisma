@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model event {
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  title     String
+  host      String
+  contact   String?
+  summary   String?    @db.Text
+  url       String?
+  start     DateTime
+  end       DateTime
+  location  String?
+  featured  Boolean    @default(false)
+  tags      EventTag[]
+}
+
+model tag {
+  id     Int        @id @default(autoincrement())
+  name   String     @unique
+  events EventTag[]
+}
+
+model EventTag {
+  eventId Int
+  tagId   Int
+  event   event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  tag     tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, tagId])
+  @@index([tagId], map: "EventTag_tagId_fkey")
+}

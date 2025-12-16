@@ -1,0 +1,102 @@
+🔧 INTEGRATION URI IS CORRECT - HERE'S THE REAL FIX
+═════════════════════════════════════════════════════
+
+You said the Integration URI already has {proxy}, which is good!
+So the issue is likely: ROUTE NOT CONNECTED TO INTEGRATION
+
+═════════════════════════════════════════════════════
+   ✅ SOLUTION (2 minutes)
+═════════════════════════════════════════════════════
+
+Go to: https://console.aws.amazon.com/apigateway/home?region=us-east-2
+
+1. Click your API: rellis-calendar-api-gateway (p4o6wzh11c)
+
+2. Click "Routes" in left menu
+
+3. Click on the route: ANY /{proxy+}
+
+4. In the route details on the right:
+   - Look at "Integration"
+   - Is it showing your backend integration?
+   - OR is it showing "None" or something else?
+
+5. If it's not connected:
+   - Click "Attach integration"
+   - Select your backend integration from dropdown
+   - Click "Attach"
+
+6. Click "Deployments" → "Deploy" → "$default" → "Deploy"
+
+7. Test:
+   curl https://p4o6wzh11c.execute-api.us-east-2.amazonaws.com/api/events
+
+═════════════════════════════════════════════════════
+   🔍 ALTERNATIVE: Check Stage
+═════════════════════════════════════════════════════
+
+The stage might not be deployed or auto-deploy is off:
+
+1. Click "Deployments" in left menu
+
+2. Look at "Last deployment" timestamp
+   - If it's old (not recent), redeploy
+
+3. Click "Deploy" button
+   - Stage: $default (or prod)
+   - Description: "Fix 404 error"
+   - Click "Deploy"
+
+4. Test again
+
+═════════════════════════════════════════════════════
+   🧪 TEST BACKEND FIRST
+═════════════════════════════════════════════════════
+
+Before debugging API Gateway, verify backend works:
+
+curl http://rellis-calendar-api-env.eba-b5gm3tfj.us-east-2.elasticbeanstalk.com/api/events
+
+If this returns 404 or error:
+- Your backend isn't working
+- Check: eb status
+- Check: eb logs
+
+If backend works but API Gateway returns 404:
+- Route/Integration issue (see above)
+
+═════════════════════════════════════════════════════
+   📋 CHECKLIST
+═════════════════════════════════════════════════════
+
+[ ] Backend responds: curl http://...elasticbeanstalk.com/api/events
+[ ] Route exists: ANY /{proxy+}
+[ ] Route is ATTACHED to integration (not "None")
+[ ] Integration URI: http://...elasticbeanstalk.com/{proxy}
+[ ] Stage deployed (check timestamp)
+[ ] API Gateway responds: curl https://...execute-api.../api/events
+
+═════════════════════════════════════════════════════
+   🚨 IF STILL 404 - NUCLEAR OPTION
+═════════════════════════════════════════════════════
+
+Delete and recreate integration:
+
+1. Integrations → Delete integration
+2. Create → HTTP
+3. URL: http://rellis-calendar-api-env.eba-b5gm3tfj.us-east-2.elasticbeanstalk.com/{proxy}
+4. Method: ANY
+5. Attach to route: ANY /{proxy+}
+6. Deploy stage
+7. Test
+
+═════════════════════════════════════════════════════
+
+RUN THIS COMMAND TO TEST:
+curl https://p4o6wzh11c.execute-api.us-east-2.amazonaws.com/api/events
+
+Expected: JSON with events
+Currently: {"message":"Not Found"}
+
+═════════════════════════════════════════════════════
+

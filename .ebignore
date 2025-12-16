@@ -1,0 +1,27 @@
+# .ebignore - files to exclude from Elastic Beanstalk deployment
+# Note: .ebignore overrides .gitignore for EB deployments
+
+node_modules/
+deploy/
+deploy.zip
+deploy-new.zip
+.idea/
+.vscode/
+.DS_Store
+*.log
+.env.local
+.env
+.git/
+.github/
+src/
+test/
+tsconfig.json
+tsconfig.test.json
+.mocharc.json
+calendarDatabase.mwb
+queries/
+var/
+var-old/
+*.md
+!README.md
+prisma.config.ts

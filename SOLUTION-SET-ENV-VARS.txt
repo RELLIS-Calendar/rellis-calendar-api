@@ -1,0 +1,108 @@
+🚨 FOUND THE PROBLEM - MISSING ENVIRONMENT VARIABLES
+═══════════════════════════════════════════════════════════
+
+Problem: Backend returns 502 Bad Gateway
+Root Cause: App crashes on startup because database environment variables are missing
+
+Your app requires these environment variables:
+- DB_HOST
+- DB_PORT
+- DB_USER
+- DB_PASSWORD
+- DB_NAME
+
+These are NOT configured in your Elastic Beanstalk environment!
+
+═══════════════════════════════════════════════════════════
+   ✅ SOLUTION 1: Set via EB Console (FASTEST)
+═══════════════════════════════════════════════════════════
+
+1. Go to: https://console.aws.amazon.com/elasticbeanstalk
+
+2. Select your environment: rellis-calendar-api-env
+
+3. Click "Configuration" in left menu
+
+4. Click "Edit" on "Software" section
+
+5. Scroll to "Environment properties"
+
+6. Add these variables:
+
+   DB_HOST=your-database-host.rds.amazonaws.com
+   DB_PORT=3306
+   DB_USER=your_db_username
+   DB_PASSWORD=your_db_password
+   DB_NAME=your_database_name
+
+7. Click "Apply"
+
+8. Wait 2-3 minutes for environment to update
+
+9. Test: curl http://rellis-calendar-api-env.eba-b5gm3tfj.us-east-2.elasticbeanstalk.com/api/events
+
+═══════════════════════════════════════════════════════════
+   ✅ SOLUTION 2: Set via EB CLI
+═══════════════════════════════════════════════════════════
+
+cd rellis-calendar-api
+
+eb setenv \
+  DB_HOST=your-database-host.rds.amazonaws.com \
+  DB_PORT=3306 \
+  DB_USER=your_db_username \
+  DB_PASSWORD=your_db_password \
+  DB_NAME=your_database_name
+
+This will automatically deploy the changes.
+
+═══════════════════════════════════════════════════════════
+   📋 WHAT HAPPENS AFTER SETTING VARIABLES
+═══════════════════════════════════════════════════════════
+
+1. EB will restart your application
+2. App will connect to database successfully
+3. Backend will respond with HTTP 200 (not 502)
+4. Then we can fix API Gateway routing
+5. Then deploy frontend changes
+
+═══════════════════════════════════════════════════════════
+   🔍 HOW TO FIND YOUR DATABASE CREDENTIALS
+═══════════════════════════════════════════════════════════
+
+If you don't remember your database credentials:
+
+1. Check your local .env file (DO NOT commit this!):
+   cat .env
+
+2. Or check AWS RDS Console:
+   - Go to: https://console.aws.amazon.com/rds
+   - Find your database instance
+   - Note the endpoint (DB_HOST)
+   - Username is shown in Configuration
+   - Password: You set this when creating the database
+
+═══════════════════════════════════════════════════════════
+   ⚠️  IMPORTANT SECURITY NOTE
+═══════════════════════════════════════════════════════════
+
+- NEVER commit .env file to git
+- NEVER put credentials in code
+- Always use environment variables in production
+- EB environment properties are encrypted at rest
+
+═══════════════════════════════════════════════════════════
+   🧪 AFTER SETTING VARIABLES - TEST
+═══════════════════════════════════════════════════════════
+
+Wait 2-3 minutes, then run:
+
+./complete-diagnostic.sh
+
+Expected result:
+✅ Backend is WORKING - HTTP 200
+
+Then we'll fix the API Gateway routing issue.
+
+═══════════════════════════════════════════════════════════
+
