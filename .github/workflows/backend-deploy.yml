@@ -81,5 +81,5 @@ jobs:
           aws elasticbeanstalk wait environment-updated --environment-names "${{ secrets.EB_ENV_NAME }}" --region ${{ secrets.AWS_REGION }}
 
       - name: Deployment finished
-        run: echo "Deployment complete. EB environment should be updated to new version: ${{ github.sha }}"
-
+        run: |
+          echo "Deployment complete. EB environment should be updated to new version: $GITHUB_SHA"
