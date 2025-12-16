@@ -78,7 +78,7 @@ jobs:
       - name: Wait for environment update to complete
         run: |
           echo "Waiting for environment to finish updating..."
-          aws elasticbeanstalk wait environment-updated --environment-names "${{ secrets.EB_ENV_NAME }}" --region ${{ secrets.AWS_REGION }}
+          aws elasticbeanstalk wait environment-updated --environment-names "${{ secrets.EB_ENVIRONMENT_NAME }}" --region ${{ secrets.AWS_REGION }}
 
       - name: Deployment finished
         run: |
